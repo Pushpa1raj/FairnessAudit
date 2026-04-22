@@ -101,7 +101,7 @@ export default function LandingPage() {
           <div className="hidden lg:flex items-center gap-10 text-xs font-bold uppercase tracking-widest text-white/40">
             <a href="#features" className="hover:text-white transition-colors">Infrastructure</a>
             <a href="#compliance" className="hover:text-white transition-colors">Protocols</a>
-            <a href="#docs" className="hover:text-white transition-colors">Datasets</a>
+            <a href="/docs" className="hover:text-white transition-colors">Documentation</a>
           </div>
           <Link href="/audit">
             <button className="btn-primary text-xs tracking-widest uppercase py-3 px-8 shadow-2xl shadow-indigo-500/40">
@@ -405,8 +405,84 @@ export default function LandingPage() {
          </div>
       </section>
 
-      {/* CTA Final */}
-      <section id="compliance" className="py-40 px-10 max-w-6xl mx-auto">
+      {/* Protocols Section */}
+      <section id="compliance" className="py-40 px-10 max-w-7xl mx-auto border-t border-white/5">
+        <div className="text-center mb-32">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-8">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Methodology</span>
+          </div>
+          <h2 className="text-7xl font-black mb-8 tracking-tighter leading-none">
+            Auditing <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">Protocols.</span>
+          </h2>
+          <p className="text-xl text-white/50 max-w-2xl mx-auto font-medium">
+            A multi-layered approach to algorithmic fairness. We don't just detect bias—we 
+            provide the mathematical framework to fix it.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-32">
+          {[
+            {
+              id: '01',
+              title: 'Evaluation Protocol',
+              desc: 'High-precision mathematical auditing using Demographic Parity and Equalized Odds metrics to quantify group disparity.',
+              icon: Activity,
+              color: '#34d399',
+              details: ['Disparity Computation', 'Severity Scoring', 'Group Intersectionality']
+            },
+            {
+              id: '02',
+              title: 'Explainability Protocol',
+              desc: "Deep-trace analysis via SHAP (SHapley Additive exPlanations) to identify which features are driving discriminatory outcomes.",
+              icon: Brain,
+              color: '#8b5cf6',
+              details: ['Feature Attribution', 'Beeswarm Logic', 'Dependency Tracking']
+            },
+            {
+              id: '03',
+              title: 'Mitigation Protocol',
+              desc: 'Automated remediation pipelines implementing Correlation Removers and Threshold Optimizers to balance accuracy and equity.',
+              icon: Zap,
+              color: '#f59e0b',
+              details: ['Pre-processing sub-space', 'Post-processing adjust', 'SLA validation']
+            },
+            {
+              id: '04',
+              title: 'Governance Protocol',
+              desc: 'Comprehensive audit logging and export-ready compliance reports mapped to the EU AI Act and NIST AI Risk Framework.',
+              icon: ShieldCheck,
+              color: '#3b82f6',
+              details: ['JSON/PDF Evidence', 'Timestamped Hash', 'Regulatory Mapping']
+            }
+          ].map((p, i) => (
+            <motion.div
+              key={p.id}
+              initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="glass-card p-12 group hover:bg-white/[0.02] transition-all relative overflow-hidden"
+            >
+              <div className="flex justify-between items-start mb-10">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-white/5 border border-white/10 group-hover:scale-110 transition-transform">
+                  <p.icon size={30} style={{ color: p.color }} />
+                </div>
+                <span className="text-4xl font-black text-white/10">{p.id}</span>
+              </div>
+              <h3 className="text-3xl font-black mb-4">{p.title}</h3>
+              <p className="text-white/40 text-lg mb-8 leading-relaxed font-medium">{p.desc}</p>
+              <div className="flex flex-wrap gap-3">
+                {p.details.map(d => (
+                  <span key={d} className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-widest text-white/60">
+                    {d}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* CTA Banner Integration */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -457,20 +533,21 @@ export default function LandingPage() {
              <div>
                 <h4 className="font-black uppercase tracking-[0.3em] text-[10px] text-white/20 mb-10">Core Protocols</h4>
                 <div className="space-y-6 text-sm font-black uppercase tracking-widest text-white/50">
-                   <a href="#" className="block hover:text-white transition-colors">Evaluation</a>
-                   <a href="#" className="block hover:text-white transition-colors">Mitigation</a>
-                   <a href="#" className="block hover:text-white transition-colors">Explainability</a>
-                   <a href="#" className="block hover:text-white transition-colors">Proxy Logic</a>
+                   <Link href="/docs/evaluation" className="block hover:text-white transition-colors">Evaluation</Link>
+                   <Link href="/docs/mitigation" className="block hover:text-white transition-colors">Mitigation</Link>
+                   <Link href="/docs/explainability" className="block hover:text-white transition-colors">Explainability</Link>
+                   <Link href="/docs/proxy-logic" className="block hover:text-white transition-colors">Proxy Logic</Link>
                 </div>
              </div>
              
              <div>
                 <h4 className="font-black uppercase tracking-[0.3em] text-[10px] text-white/20 mb-10">Network</h4>
                 <div className="space-y-6 text-sm font-black uppercase tracking-widest text-white/50">
-                   <a href="#" className="block hover:text-white transition-colors">GitHub</a>
-                   <a href="#" className="block hover:text-white transition-colors">Documentation</a>
-                   <a href="#" className="block hover:text-white transition-colors">API Status</a>
-                   <a href="#" className="block hover:text-white transition-colors">GSC 2026</a>
+                   <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="block hover:text-white transition-colors">GitHub</a>
+                   <Link href="/docs" className="block hover:text-white transition-colors">Documentation</Link>
+                   <Link href="/status" className="block hover:text-white transition-colors">API Status</Link>
+                   <a href="https://developers.google.com/community/gdsc-solution-challenge" target="_blank" rel="noopener noreferrer" className="block hover:text-white transition-colors">GSC 2026</a>
+                   <Link href="/contact" className="block hover:text-white transition-colors">Contact</Link>
                 </div>
              </div>
           </div>
