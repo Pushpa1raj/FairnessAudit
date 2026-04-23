@@ -1,569 +1,478 @@
 'use client';
 
 import Link from 'next/link';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
 import {
-  Shield, ArrowRight, BarChart3, Brain, Zap, CheckCircle,
-  Scale, Eye, GitCompare, FileText, Sparkles, ChevronRight,
-  UploadCloud, Settings, Search, LayoutPanelLeft, ShieldAlert, ShieldCheck, Play,
-  Database, Cpu, Activity, Lock, Globe, Server
+  Shield, ArrowRight, BarChart3, Brain, Zap,
+  Scale, Eye, FileText, ChevronRight,
+  UploadCloud, GitCompare, ShieldCheck,
+  Activity, Globe, Server
 } from 'lucide-react';
 
 import { MetricsMarquee } from '@/components/landing/MetricsMarquee';
 
-const features = [
+/* ─── animation presets ─── */
+const fadeUp = {
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: '-40px' },
+  transition: { duration: 0.5, ease: 'easeOut' },
+};
+
+const stagger = (i: number) => ({
+  ...fadeUp,
+  transition: { ...fadeUp.transition, delay: i * 0.08 },
+});
+
+/* ─── data ─── */
+const capabilities = [
   {
     icon: BarChart3,
-    title: 'Fairness Metrics',
-    description: 'Demographic parity, equalized odds, and equal opportunity computed instantly with clear severity scores.',
-    color: '#58a6ff',
-    stat: '12+ Core Metrics'
+    title: 'Demographic Parity Analysis',
+    description: 'Measures outcome distribution across protected groups to quantify selection rate disparities.',
+  },
+  {
+    icon: Scale,
+    title: 'Equalized Odds Evaluation',
+    description: 'Compares true positive and false positive rates across demographic groups.',
   },
   {
     icon: Brain,
-    title: 'SHAP Explainability',
-    description: "Understand why your model makes biased predictions. Peek 'under the hood' with feature attributions.",
-    color: '#8b5cf6',
-    stat: 'Deep Trace'
+    title: 'SHAP Feature Attribution',
+    description: 'Identifies which input features drive model predictions using Shapley values.',
+  },
+  {
+    icon: Eye,
+    title: 'Proxy Variable Detection',
+    description: 'Detects features acting as proxies for protected attributes through correlation analysis.',
   },
   {
     icon: Zap,
     title: 'Bias Mitigation',
-    description: 'Apply state-of-the-art algorithms to fix discriminatory patterns and see before/after improvements.',
-    color: '#10b981',
-    stat: '98% Success'
-  },
-  {
-    icon: Scale,
-    title: 'Legal Compliance',
-    description: 'Automatically check against the "80% Rule" and other standard fairness thresholds.',
-    color: '#f59e0b',
-    stat: 'Global Standards'
-  },
-  {
-    icon: Eye,
-    title: 'Proxy Detection',
-    description: 'Detect hidden features (like zip codes) that might be acting as proxies for protected classes.',
-    color: '#ef4444',
-    stat: 'Auto-Discovery'
+    description: 'Applies pre-processing and in-processing techniques from Fairlearn to reduce disparities.',
   },
   {
     icon: FileText,
-    title: 'Audit Reports',
-    description: 'Generate comprehensive JSON or PDF reports for stakeholders and regulators with one click.',
-    color: '#3b82f6',
-    stat: 'PDF/JSON'
+    title: 'Compliance Reporting',
+    description: 'Generates structured audit reports mapped to the EU AI Act and NIST AI RMF.',
   },
 ];
 
-const technicalSpecs = [
-  { label: 'ML Engine', val: 'Scikit-Learn / Fairlearn' },
-  { label: 'Intelligence', val: 'Gemini 2.0 Flash' },
-  { label: 'Compute', val: 'Distributed FastAPI' },
-  { label: 'Encryption', val: 'AES-256-GCM' },
-  { label: 'Compliance', val: 'EU AI Act / NIST' },
-  { label: 'Deployment', val: 'Vercel / Cloud Run' },
+const workflowSteps = [
+  { num: '01', label: 'Dataset', desc: 'Upload CSV or select a benchmark dataset' },
+  { num: '02', label: 'Mapping', desc: 'Assign target, features, and sensitive attributes' },
+  { num: '03', label: 'Evaluation', desc: 'Compute fairness metrics across groups' },
+  { num: '04', label: 'Explainability', desc: 'SHAP analysis of feature contributions' },
+  { num: '05', label: 'Mitigation', desc: 'Apply fairness-aware correction algorithms' },
+  { num: '06', label: 'Report', desc: 'Export findings as PDF or JSON' },
+];
+
+const productScreenshots = [
+  {
+    src: '/3.1.jpg',
+    title: 'Fairness Analysis',
+    desc: 'Overall bias score with per-attribute breakdown and impact estimation.',
+  },
+  {
+    src: '/4.jpg',
+    title: 'SHAP Explainability',
+    desc: 'Feature importance and detailed attribution values for model transparency.',
+  },
+  {
+    src: '/5.jpg',
+    title: 'Bias Mitigation',
+    desc: 'Side-by-side comparison of pre-processing and in-processing techniques.',
+  },
 ];
 
 export default function LandingPage() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
-  const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.8]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-
   return (
-    <div ref={containerRef} className="min-h-screen bg-[#050508] text-white overflow-x-hidden selection:bg-indigo-500/30">
-      {/* Background Gradients */}
+    <div className="min-h-screen bg-[#0d1117] text-[#c9d1d9] overflow-x-hidden selection:bg-indigo-500/30">
+
+      {/* ── Subtle background ── */}
       <div className="fixed inset-0 pointer-events-none -z-10">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-900/20 blur-[140px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-900/10 blur-[140px] animate-pulse" style={{ animationDelay: '3s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.05]" 
-             style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '60px 60px' }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full bg-indigo-900/[0.07] blur-[120px]" />
       </div>
 
       <MetricsMarquee />
 
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-10 py-6 transition-all"
-        style={{ background: 'rgba(5, 5, 8, 0.8)', borderBottom: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)' }}>
-        <div className="flex items-center gap-3 group cursor-pointer">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-2xl shadow-indigo-500/20 group-hover:scale-110 transition-transform bg-gradient-to-br from-indigo-500 to-purple-600">
-            <Shield size={20} color="white" />
+      {/* ══════════════════════════════════════════════
+          NAVIGATION
+      ══════════════════════════════════════════════ */}
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-10 h-16"
+        style={{ background: 'rgba(13,17,23,0.85)', borderBottom: '1px solid rgba(48,54,61,0.6)', backdropFilter: 'blur(12px)' }}
+      >
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#1f6feb] group-hover:scale-105 transition-transform">
+            <Shield size={16} color="white" />
           </div>
-          <span className="font-black text-2xl tracking-tighter">FairnessAudit</span>
-        </div>
-        <div className="flex items-center gap-8">
-          <div className="hidden lg:flex items-center gap-10 text-xs font-bold uppercase tracking-widest text-white/40">
-            <a href="#features" className="hover:text-white transition-colors">Infrastructure</a>
-            <a href="#compliance" className="hover:text-white transition-colors">Protocols</a>
-            <a href="/docs" className="hover:text-white transition-colors">Documentation</a>
+          <span className="font-semibold text-[15px] text-white tracking-tight">FairnessAudit</span>
+        </Link>
+
+        <div className="flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-6 text-[13px] text-[#8b949e]">
+            <a href="#capabilities" className="hover:text-white transition-colors">Capabilities</a>
+            <a href="#methodology" className="hover:text-white transition-colors">Methodology</a>
+            <Link href="/docs" className="hover:text-white transition-colors">Docs</Link>
+            <a href="https://github.com/OneDev-Harsh/FairnessAudit" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
           </div>
           <Link href="/audit">
-            <button className="btn-primary text-xs tracking-widest uppercase py-3 px-8 shadow-2xl shadow-indigo-500/40">
-              Launch Audit Suite <ArrowRight size={14} />
+            <button className="btn-primary text-[13px] py-2 px-5">
+              Run Audit <ArrowRight size={14} />
             </button>
           </Link>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center pt-20">
-        <motion.div 
-          style={{ scale: heroScale, opacity: heroOpacity }}
-          className="max-w-7xl mx-auto px-10 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center"
-        >
-          <div className="lg:col-span-7 z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">System v2.0 Live</span>
-              </div>
-              
-              <h1 className="text-7xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter">
-                The Standard for <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-emerald-400">
-                  Ethical Intelligence.
-                </span>
-              </h1>
-              
-              <p className="text-xl text-white/50 mb-12 leading-relaxed max-w-2xl font-medium">
-                Advanced fairness auditing for mission-critical AI. Ingest datasets, evaluate 
-                systemic bias, and mitigate discrimination with mathematical precision.
-              </p>
+      {/* ══════════════════════════════════════════════
+          HERO
+      ══════════════════════════════════════════════ */}
+      <section className="pt-32 pb-20 lg:pt-40 lg:pb-28">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10">
 
-              <div className="flex items-center gap-6 flex-wrap">
-                <Link href="/audit">
-                  <button className="h-16 px-10 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-lg shadow-[0_20px_50px_rgba(79,70,229,0.3)] transition-all flex items-center gap-3 group">
-                    Initialize Audit 
-                    <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </Link>
-                <Link href="/audit?demo=true">
-                  <button className="h-16 px-10 rounded-2xl bg-white/5 border border-white/10 text-white font-black text-lg hover:bg-white/10 transition-all flex items-center gap-3">
-                    <Play size={20} fill="currentColor" /> Run Demo
-                  </button>
-                </Link>
-              </div>
+          {/* ── Text ── */}
+          <motion.div {...fadeUp} className="max-w-3xl mb-16">
+            <p className="text-[13px] font-medium text-[#58a6ff] mb-5 tracking-wide">
+              Google Solution Challenge 2026
+            </p>
+            <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-white leading-[1.15] tracking-tight mb-6">
+              Auditing Machine Learning<br />
+              Systems for Fairness
+            </h1>
+            <p className="text-lg text-[#8b949e] leading-relaxed max-w-2xl mb-10">
+              Quantify bias across sensitive attributes, trace predictions through SHAP explainability, 
+              and apply fairness-aware mitigation — with structured compliance reporting.
+            </p>
+            <div className="flex items-center gap-4 flex-wrap">
+              <Link href="/audit">
+                <button className="h-11 px-6 rounded-lg bg-[#1f6feb] hover:bg-[#388bfd] text-white font-medium text-[14px] transition-colors flex items-center gap-2">
+                  Run Audit <ArrowRight size={16} />
+                </button>
+              </Link>
+              <Link href="/audit?demo=true">
+                <button className="h-11 px-6 rounded-lg bg-transparent border border-[#30363d] hover:border-[#8b949e] text-[#c9d1d9] font-medium text-[14px] transition-colors flex items-center gap-2">
+                  Try Demo
+                </button>
+              </Link>
+            </div>
+          </motion.div>
 
-              <div className="mt-20 grid grid-cols-3 gap-10 border-t border-white/5 pt-12">
-                 <div>
-                    <div className="text-3xl font-black mb-1">100%</div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-white/30">Transparent</div>
-                 </div>
-                 <div>
-                    <div className="text-3xl font-black mb-1">∞</div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-white/30">Scalability</div>
-                 </div>
-                 <div>
-                    <div className="text-3xl font-black mb-1">GDPR</div>
-                    <div className="text-[10px] font-black uppercase tracking-widest text-white/30">Compliant</div>
-                 </div>
-              </div>
-            </motion.div>
-          </div>
-
-          <div className="lg:col-span-5 relative perspective-2000">
-            <motion.div
-              initial={{ opacity: 0, rotateY: 20, rotateX: 10, scale: 0.9 }}
-              whileInView={{ opacity: 1, rotateY: 15, rotateX: 5, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="relative hidden lg:block"
-            >
-              <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] rounded-full -z-10 animate-pulse" />
-              <div className="glass-card p-2 rounded-3xl border border-white/10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] transform-gpu hover:rotate-y-0 hover:rotate-x-0 transition-all duration-700 ease-out">
-                <div className="bg-[#0a0b0f] rounded-2xl overflow-hidden aspect-[4/3] relative">
-                  {/* Mock UI Elements */}
-                  <div className="absolute top-0 left-0 right-0 h-10 bg-white/5 flex items-center px-4 gap-2 border-b border-white/5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/30" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/30" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-500/30" />
-                    <div className="ml-auto flex gap-4">
-                      <div className="w-12 h-1 bg-white/10 rounded" />
-                      <div className="w-8 h-1 bg-white/10 rounded" />
-                    </div>
-                  </div>
-                  <div className="p-8 pt-16">
-                    <div className="flex justify-between items-start mb-10">
-                      <div>
-                        <div className="w-32 h-2 bg-indigo-500/20 rounded mb-3" />
-                        <div className="w-56 h-8 bg-indigo-500/10 rounded" />
-                      </div>
-                      <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center">
-                        <Activity size={24} className="text-indigo-400" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4 mb-10">
-                      {[1, 2, 3].map(i => (
-                        <div key={i} className="h-24 bg-white/[0.02] rounded-2xl border border-white/5 p-4">
-                           <div className="w-1/2 h-1.5 bg-white/10 rounded mb-2" />
-                           <div className="w-3/4 h-4 bg-white/5 rounded" />
-                        </div>
-                      ))}
-                    </div>
-                    <div className="h-44 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 rounded-2xl border border-indigo-500/10 relative overflow-hidden">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-full px-10 flex gap-4 items-end h-20">
-                          {[40, 70, 45, 90, 65, 80, 30, 55, 75, 50].map((h, i) => (
-                            <motion.div 
-                              key={i}
-                              initial={{ height: 0 }}
-                              whileInView={{ height: `${h}%` }}
-                              transition={{ delay: i * 0.05, duration: 1 }}
-                              className="flex-1 bg-indigo-500/20 rounded-t-sm"
-                            />
-                          ))}
-                        </div>
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#0a0b0f] to-transparent" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Floating Elements */}
-              <motion.div 
-                animate={{ y: [0, -15, 0] }} 
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -top-10 -right-10 glass-card px-6 py-5 rounded-2xl border-indigo-500/30 shadow-2xl backdrop-blur-3xl"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
-                    <CheckCircle size={20} />
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-white/40 uppercase font-black tracking-[0.2em]">Status</div>
-                    <div className="text-sm font-black text-white">98% FAIRNESS</div>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                animate={{ y: [0, 15, 0] }} 
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute -bottom-10 -left-10 glass-card px-6 py-5 rounded-2xl border-purple-500/30 shadow-2xl backdrop-blur-3xl"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400">
-                    <Brain size={20} />
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-white/40 uppercase font-black tracking-[0.2em]">Logic</div>
-                    <div className="text-sm font-black text-white">AI EXPLAINED</div>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </motion.div>
+          {/* ── Hero Screenshot ── */}
+          <motion.div
+            {...fadeUp}
+            transition={{ ...fadeUp.transition, delay: 0.15 }}
+            className="relative rounded-xl overflow-hidden border border-[#30363d] shadow-2xl shadow-black/40"
+          >
+            <Image
+              src="/1.jpg"
+              alt="FairnessAudit — Dataset selection interface showing CSV upload and benchmark datasets"
+              width={1400}
+              height={800}
+              className="w-full h-auto"
+              priority
+            />
+          </motion.div>
+        </div>
       </section>
 
-      {/* Technical Marquee 2 */}
-      <div className="py-10 border-y border-white/5 bg-white/[0.01]">
-         <div className="max-w-7xl mx-auto px-10 flex flex-wrap justify-between gap-10">
-            {technicalSpecs.map(s => (
-               <div key={s.label} className="flex items-center gap-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white/40">{s.label}:</span>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white">{s.val}</span>
-               </div>
-            ))}
-         </div>
+      {/* ── Tech strip ── */}
+      <div className="border-y border-[#21262d] bg-[#0d1117]">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 py-4 flex flex-wrap justify-between gap-x-10 gap-y-3">
+          {[
+            { k: 'Framework', v: 'Fairlearn + Scikit-Learn' },
+            { k: 'Explainability', v: 'SHAP' },
+            { k: 'Backend', v: 'FastAPI' },
+            { k: 'Intelligence', v: 'Gemini 2.0 Flash' },
+            { k: 'Compliance', v: 'EU AI Act · NIST' },
+          ].map(s => (
+            <div key={s.k} className="flex items-center gap-2 text-[11px]">
+              <span className="text-[#484f58] font-medium uppercase tracking-wider">{s.k}</span>
+              <span className="text-[#8b949e] font-medium">{s.v}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Features Grid */}
-      <section id="features" className="py-40 px-10 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row items-end justify-between gap-10 mb-24">
-          <div className="max-w-2xl">
-            <h2 className="text-6xl font-black mb-8 tracking-tighter leading-none">
-              Powerful Core <br />
-              Infrastructure.
+      {/* ══════════════════════════════════════════════
+          SYSTEM WORKFLOW
+      ══════════════════════════════════════════════ */}
+      <section className="py-24 lg:py-32">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10">
+          <motion.div {...fadeUp} className="mb-16">
+            <h2 className="text-2xl md:text-3xl font-semibold text-white tracking-tight mb-3">
+              How It Works
             </h2>
-            <p className="text-xl text-white/50">
-              Our platform handles the complex mathematical heavy-lifting required 
-              to ensure your machine learning models are ethical and secure.
+            <p className="text-[#8b949e] max-w-xl">
+              A six-stage pipeline from raw data to a compliance-ready fairness report.
             </p>
-          </div>
-          <div className="flex gap-4">
-             <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40"><Database size={24}/></div>
-             <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40"><Cpu size={24}/></div>
-             <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/40"><Globe size={24}/></div>
-          </div>
-        </div>
+          </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((f, i) => (
-            <motion.div
-              key={f.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="group glass-card p-12 hover:bg-white/[0.04] transition-all border-white/5 hover:border-white/20 relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-40 h-40 bg-white/[0.02] rounded-full -mr-20 -mt-20 group-hover:scale-150 transition-transform duration-1000" />
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-10 transition-transform group-hover:scale-110"
-                style={{ background: `${f.color}10`, border: `1px solid ${f.color}30` }}>
-                <f.icon size={30} style={{ color: f.color }} />
-              </div>
-              <h3 className="font-black text-2xl mb-4 leading-none">{f.title}</h3>
-              <p className="text-white/50 mb-8 leading-relaxed font-medium">{f.description}</p>
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest" style={{ color: f.color }}>
-                 <Sparkles size={12} /> {f.stat}
-              </div>
-            </motion.div>
-          ))}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {workflowSteps.map((step, i) => (
+              <motion.div
+                key={step.num}
+                {...stagger(i)}
+                className="p-5 rounded-lg border border-[#21262d] bg-[#0d1117] hover:border-[#30363d] transition-colors"
+              >
+                <div className="text-[11px] font-mono text-[#58a6ff] mb-3">{step.num}</div>
+                <div className="text-[14px] font-semibold text-white mb-1.5">{step.label}</div>
+                <div className="text-[12px] text-[#8b949e] leading-relaxed">{step.desc}</div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Dataset / Scientific Reference Section */}
-      <section className="py-40 bg-white/[0.02] border-y border-white/5">
-         <div className="max-w-7xl mx-auto px-10 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div>
-               <h2 className="text-5xl font-black mb-8 tracking-tighter">Scientific Accuracy & Data Integrity.</h2>
-               <p className="text-xl text-white/50 mb-10 leading-relaxed font-medium">
-                  FairnessAudit implements industry-standard algorithms validated by leading researchers. 
-                  We support complex data ingestion pipelines and specialized fairness datasets for benchmarking.
-               </p>
-               
-               <div className="space-y-6">
-                  {[
-                     { label: 'Ingest Real-world Datasets', icon: Database },
-                     { label: 'Compute Parity Metrics', icon: BarChart3 },
-                     { label: 'Verify Compliance Status', icon: ShieldCheck },
-                  ].map(item => (
-                     <div key={item.label} className="flex items-center gap-4 p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-white/20 transition-all">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
-                           <item.icon size={20} />
-                        </div>
-                        <span className="font-black text-sm uppercase tracking-widest">{item.label}</span>
-                     </div>
-                  ))}
-               </div>
-            </div>
+      {/* ══════════════════════════════════════════════
+          SYSTEM CAPABILITIES
+      ══════════════════════════════════════════════ */}
+      <section id="capabilities" className="py-24 lg:py-32 border-t border-[#21262d]">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10">
+          <motion.div {...fadeUp} className="mb-16">
+            <h2 className="text-2xl md:text-3xl font-semibold text-white tracking-tight mb-3">
+              System Capabilities
+            </h2>
+            <p className="text-[#8b949e] max-w-xl">
+              Core analysis modules for evaluating and improving model fairness.
+            </p>
+          </motion.div>
 
-            <div className="relative">
-               <div className="absolute inset-0 bg-emerald-500/10 blur-[100px] rounded-full -z-10" />
-               <div className="glass-card p-10 rounded-[40px] border-white/10 shadow-2xl relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex items-center gap-6 mb-10">
-                     <div className="w-16 h-16 rounded-3xl bg-[#0a0b0f] border border-white/10 flex items-center justify-center shadow-xl">
-                        <Lock size={30} className="text-indigo-400" />
-                     </div>
-                     <div>
-                        <h4 className="text-2xl font-black">Secure Ingestion</h4>
-                        <p className="text-white/40 font-bold uppercase tracking-widest text-[10px]">Vault Protocol Active</p>
-                     </div>
-                  </div>
-                  <div className="space-y-4">
-                     <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          whileInView={{ width: '85%' }}
-                          transition={{ duration: 1.5 }}
-                          className="h-full bg-indigo-500" 
-                        />
-                     </div>
-                     <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          whileInView={{ width: '92%' }}
-                          transition={{ duration: 1.5, delay: 0.2 }}
-                          className="h-full bg-purple-500" 
-                        />
-                     </div>
-                     <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          whileInView={{ width: '78%' }}
-                          transition={{ duration: 1.5, delay: 0.4 }}
-                          className="h-full bg-emerald-500" 
-                        />
-                     </div>
-                  </div>
-                  <div className="mt-10 grid grid-cols-2 gap-4">
-                     <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
-                        <div className="text-xs text-white/30 font-black uppercase mb-1">Rows Scanned</div>
-                        <div className="text-xl font-black">1.4M+</div>
-                     </div>
-                     <div className="p-4 rounded-2xl bg-black/40 border border-white/5">
-                        <div className="text-xs text-white/30 font-black uppercase mb-1">Latency</div>
-                        <div className="text-xl font-black">12ms</div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {capabilities.map((c, i) => (
+              <motion.div
+                key={c.title}
+                {...stagger(i)}
+                className="p-6 rounded-lg border border-[#21262d] bg-[#0d1117] hover:border-[#30363d] transition-colors group"
+              >
+                <c.icon size={20} className="text-[#58a6ff] mb-4 group-hover:text-[#388bfd] transition-colors" />
+                <h3 className="text-[15px] font-semibold text-white mb-2">{c.title}</h3>
+                <p className="text-[13px] text-[#8b949e] leading-relaxed">{c.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Protocols Section */}
-      <section id="compliance" className="py-40 px-10 max-w-7xl mx-auto border-t border-white/5">
-        <div className="text-center mb-32">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-8">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">Methodology</span>
+      {/* ══════════════════════════════════════════════
+          PRODUCT SCREENSHOTS
+      ══════════════════════════════════════════════ */}
+      <section className="py-24 lg:py-32 border-t border-[#21262d]">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10">
+          <motion.div {...fadeUp} className="mb-16">
+            <h2 className="text-2xl md:text-3xl font-semibold text-white tracking-tight mb-3">
+              Inside the Platform
+            </h2>
+            <p className="text-[#8b949e] max-w-xl">
+              Real interface output from a fairness audit on the UCI Adult Income dataset.
+            </p>
+          </motion.div>
+
+          <div className="space-y-16">
+            {productScreenshots.map((shot, i) => (
+              <motion.div key={shot.src} {...stagger(i)} className="group">
+                <div className="flex items-baseline gap-3 mb-4">
+                  <span className="text-[11px] font-mono text-[#484f58]">{String(i + 1).padStart(2, '0')}</span>
+                  <div>
+                    <h3 className="text-[16px] font-semibold text-white">{shot.title}</h3>
+                    <p className="text-[13px] text-[#8b949e]">{shot.desc}</p>
+                  </div>
+                </div>
+                <div className="rounded-lg overflow-hidden border border-[#21262d] group-hover:border-[#30363d] transition-colors shadow-lg shadow-black/20">
+                  <Image
+                    src={shot.src}
+                    alt={`${shot.title} — ${shot.desc}`}
+                    width={1400}
+                    height={800}
+                    className="w-full h-auto transition-transform duration-500 group-hover:scale-[1.01]"
+                    loading="lazy"
+                  />
+                </div>
+              </motion.div>
+            ))}
           </div>
-          <h2 className="text-7xl font-black mb-8 tracking-tighter leading-none">
-            Auditing <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">Protocols.</span>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          METHODOLOGY & TRUST
+      ══════════════════════════════════════════════ */}
+      <section id="methodology" className="py-24 lg:py-32 border-t border-[#21262d]">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10">
+          <motion.div {...fadeUp} className="mb-16">
+            <h2 className="text-2xl md:text-3xl font-semibold text-white tracking-tight mb-3">
+              Methodology
+            </h2>
+            <p className="text-[#8b949e] max-w-xl">
+              Built on established research in algorithmic fairness and model interpretability.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              {
+                title: 'Fairlearn',
+                role: 'Bias Detection & Mitigation',
+                desc: 'Open-source toolkit from Microsoft Research for assessing and improving fairness of AI systems. Provides metrics (Demographic Parity, Equalized Odds) and mitigation algorithms (ExponentiatedGradient, ThresholdOptimizer).',
+                link: 'https://fairlearn.org',
+              },
+              {
+                title: 'SHAP',
+                role: 'Model Explainability',
+                desc: 'Computes Shapley values to explain individual predictions. Attributes each feature\'s contribution to the model output, enabling auditors to identify which variables drive biased outcomes.',
+                link: 'https://shap.readthedocs.io',
+              },
+              {
+                title: 'Statistical Fairness',
+                role: 'Evaluation Framework',
+                desc: 'Implements group fairness metrics grounded in the "80% Rule" (disparate impact ratio), equal opportunity difference, and equalized odds difference — mapped to EU AI Act and NIST AI Risk Management Framework.',
+                link: null,
+              },
+            ].map((m, i) => (
+              <motion.div
+                key={m.title}
+                {...stagger(i)}
+                className="p-6 rounded-lg border border-[#21262d] bg-[#0d1117] hover:border-[#30363d] transition-colors"
+              >
+                <div className="text-[11px] font-medium text-[#58a6ff] uppercase tracking-wider mb-1">{m.role}</div>
+                <h3 className="text-lg font-semibold text-white mb-3">{m.title}</h3>
+                <p className="text-[13px] text-[#8b949e] leading-relaxed mb-4">{m.desc}</p>
+                {m.link && (
+                  <a
+                    href={m.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[12px] text-[#58a6ff] hover:underline inline-flex items-center gap-1"
+                  >
+                    Documentation <ChevronRight size={12} />
+                  </a>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          ADDITIONAL SCREENSHOTS
+      ══════════════════════════════════════════════ */}
+      <section className="py-24 lg:py-32 border-t border-[#21262d]">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10">
+          <motion.div {...fadeUp} className="mb-16">
+            <h2 className="text-2xl md:text-3xl font-semibold text-white tracking-tight mb-3">
+              More from the Audit Pipeline
+            </h2>
+            <p className="text-[#8b949e] max-w-xl">
+              Column mapping, scenario simulation, and reporting interfaces.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { src: '/2.jpg', title: 'Column Mapping', desc: 'Assign target columns, features, and sensitive attributes for analysis.' },
+              { src: '/3.3.jpg', title: 'Scenario Simulator', desc: 'Explore fairness-accuracy tradeoffs by adjusting the decision threshold.' },
+              { src: '/0.1.jpg', title: 'AI Consultant', desc: 'Context-aware assistant that explains audit findings and mitigation strategies.' },
+              { src: '/6.1.jpg', title: 'Audit Report', desc: 'Executive summary with recommendations, exportable as PDF.' },
+            ].map((shot, i) => (
+              <motion.div key={shot.src} {...stagger(i)} className="group">
+                <div className="rounded-lg overflow-hidden border border-[#21262d] group-hover:border-[#30363d] transition-colors shadow-lg shadow-black/20 mb-3">
+                  <Image
+                    src={shot.src}
+                    alt={`${shot.title} — ${shot.desc}`}
+                    width={1400}
+                    height={800}
+                    className="w-full h-auto transition-transform duration-500 group-hover:scale-[1.01]"
+                    loading="lazy"
+                  />
+                </div>
+                <h3 className="text-[14px] font-semibold text-white">{shot.title}</h3>
+                <p className="text-[12px] text-[#8b949e]">{shot.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          FINAL CTA
+      ══════════════════════════════════════════════ */}
+      <section className="py-24 lg:py-32 border-t border-[#21262d]">
+        <motion.div {...fadeUp} className="max-w-6xl mx-auto px-6 lg:px-10 text-center">
+          <h2 className="text-2xl md:text-3xl font-semibold text-white tracking-tight mb-4">
+            Evaluate your model
           </h2>
-          <p className="text-xl text-white/50 max-w-2xl mx-auto font-medium">
-            A multi-layered approach to algorithmic fairness. We don't just detect bias—we 
-            provide the mathematical framework to fix it.
+          <p className="text-[#8b949e] max-w-lg mx-auto mb-8">
+            Upload a dataset or run the built-in demo to see a full fairness audit in action. 
+            No account required.
           </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-32">
-          {[
-            {
-              id: '01',
-              title: 'Evaluation Protocol',
-              desc: 'High-precision mathematical auditing using Demographic Parity and Equalized Odds metrics to quantify group disparity.',
-              icon: Activity,
-              color: '#34d399',
-              details: ['Disparity Computation', 'Severity Scoring', 'Group Intersectionality']
-            },
-            {
-              id: '02',
-              title: 'Explainability Protocol',
-              desc: "Deep-trace analysis via SHAP (SHapley Additive exPlanations) to identify which features are driving discriminatory outcomes.",
-              icon: Brain,
-              color: '#8b5cf6',
-              details: ['Feature Attribution', 'Beeswarm Logic', 'Dependency Tracking']
-            },
-            {
-              id: '03',
-              title: 'Mitigation Protocol',
-              desc: 'Automated remediation pipelines implementing Correlation Removers and Threshold Optimizers to balance accuracy and equity.',
-              icon: Zap,
-              color: '#f59e0b',
-              details: ['Pre-processing sub-space', 'Post-processing adjust', 'SLA validation']
-            },
-            {
-              id: '04',
-              title: 'Governance Protocol',
-              desc: 'Comprehensive audit logging and export-ready compliance reports mapped to the EU AI Act and NIST AI Risk Framework.',
-              icon: ShieldCheck,
-              color: '#3b82f6',
-              details: ['JSON/PDF Evidence', 'Timestamped Hash', 'Regulatory Mapping']
-            }
-          ].map((p, i) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="glass-card p-12 group hover:bg-white/[0.02] transition-all relative overflow-hidden"
-            >
-              <div className="flex justify-between items-start mb-10">
-                <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-white/5 border border-white/10 group-hover:scale-110 transition-transform">
-                  <p.icon size={30} style={{ color: p.color }} />
-                </div>
-                <span className="text-4xl font-black text-white/10">{p.id}</span>
-              </div>
-              <h3 className="text-3xl font-black mb-4">{p.title}</h3>
-              <p className="text-white/40 text-lg mb-8 leading-relaxed font-medium">{p.desc}</p>
-              <div className="flex flex-wrap gap-3">
-                {p.details.map(d => (
-                  <span key={d} className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-widest text-white/60">
-                    {d}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* CTA Banner Integration */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="rounded-[60px] p-20 text-center relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-700 to-indigo-900 border border-white/10 shadow-[0_50px_100px_-20px_rgba(79,70,229,0.5)]"
-        >
-           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_transparent_0%,_black_100%)] opacity-30" />
-           <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/20 blur-[120px] rounded-full" />
-           
-           <div className="relative z-10">
-              <ShieldCheck className="mx-auto mb-10 text-white/20" size={100} />
-              <h2 className="text-6xl md:text-7xl font-black mb-10 tracking-tighter leading-none">
-                Start Your Fair AI <br /> Journey Today.
-              </h2>
-              <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-                <Link href="/audit">
-                  <button className="h-20 px-16 rounded-[30px] bg-white text-indigo-900 font-black text-2xl hover:scale-105 transition-transform shadow-2xl">
-                    Launch Audit Suite
-                  </button>
-                </Link>
-                <div className="text-left">
-                   <div className="text-white/60 font-black text-sm uppercase tracking-widest mb-1 flex items-center gap-2">
-                      <CheckCircle size={18} className="text-emerald-400" /> No Authentication Required
-                   </div>
-                   <div className="text-white/30 font-black text-[10px] uppercase tracking-[0.3em]">Open Source · GSC 2026</div>
-                </div>
-              </div>
-           </div>
+          <div className="flex items-center justify-center gap-4 flex-wrap">
+            <Link href="/audit">
+              <button className="h-11 px-6 rounded-lg bg-[#1f6feb] hover:bg-[#388bfd] text-white font-medium text-[14px] transition-colors flex items-center gap-2">
+                Run an Audit <ArrowRight size={16} />
+              </button>
+            </Link>
+            <Link href="/docs">
+              <button className="h-11 px-6 rounded-lg bg-transparent border border-[#30363d] hover:border-[#8b949e] text-[#c9d1d9] font-medium text-[14px] transition-colors">
+                Explore Documentation
+              </button>
+            </Link>
+          </div>
         </motion.div>
       </section>
 
-      {/* Technical Footer */}
-      <footer className="py-32 px-10 border-t border-white/5 bg-[#030305]">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-20 mb-24">
-             <div className="md:col-span-2">
-                <div className="flex items-center gap-3 mb-8">
-                   <div className="w-12 h-12 rounded-2xl bg-indigo-500 flex items-center justify-center shadow-2xl shadow-indigo-500/40">
-                      <Shield size={24} color="white" />
-                   </div>
-                   <span className="font-black text-3xl tracking-tighter">FairnessAudit</span>
+      {/* ══════════════════════════════════════════════
+          FOOTER
+      ══════════════════════════════════════════════ */}
+      <footer className="border-t border-[#21262d] bg-[#010409]">
+        <div className="max-w-6xl mx-auto px-6 lg:px-10 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-[#1f6feb] flex items-center justify-center">
+                  <Shield size={16} color="white" />
                 </div>
-                <p className="text-xl text-white/30 max-w-md font-medium leading-relaxed">
-                   The next-generation framework for algorithmic auditing and responsible AI governance.
-                </p>
-             </div>
-             
-             <div>
-                <h4 className="font-black uppercase tracking-[0.3em] text-[10px] text-white/20 mb-10">Core Protocols</h4>
-                <div className="space-y-6 text-sm font-black uppercase tracking-widest text-white/50">
-                   <Link href="/docs/evaluation" className="block hover:text-white transition-colors">Evaluation</Link>
-                   <Link href="/docs/mitigation" className="block hover:text-white transition-colors">Mitigation</Link>
-                   <Link href="/docs/explainability" className="block hover:text-white transition-colors">Explainability</Link>
-                   <Link href="/docs/proxy-logic" className="block hover:text-white transition-colors">Proxy Logic</Link>
-                </div>
-             </div>
-             
-             <div>
-                <h4 className="font-black uppercase tracking-[0.3em] text-[10px] text-white/20 mb-10">Network</h4>
-                <div className="space-y-6 text-sm font-black uppercase tracking-widest text-white/50">
-                   <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="block hover:text-white transition-colors">GitHub</a>
-                   <Link href="/docs" className="block hover:text-white transition-colors">Documentation</Link>
-                   <Link href="/status" className="block hover:text-white transition-colors">API Status</Link>
-                   <a href="https://developers.google.com/community/gdsc-solution-challenge" target="_blank" rel="noopener noreferrer" className="block hover:text-white transition-colors">GSC 2026</a>
-                   <Link href="/contact" className="block hover:text-white transition-colors">Contact</Link>
-                </div>
-             </div>
+                <span className="font-semibold text-white text-[15px] tracking-tight">FairnessAudit</span>
+              </div>
+              <p className="text-[13px] text-[#484f58] max-w-sm leading-relaxed">
+                An open-source platform for auditing machine learning models against fairness criteria. 
+                Built for the Google Solution Challenge 2026.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#484f58] mb-4">Platform</h4>
+              <div className="space-y-2.5 text-[13px] text-[#8b949e]">
+                <Link href="/audit" className="block hover:text-white transition-colors">Run Audit</Link>
+                <Link href="/docs" className="block hover:text-white transition-colors">Documentation</Link>
+                <Link href="/status" className="block hover:text-white transition-colors">System Status</Link>
+                <Link href="/contact" className="block hover:text-white transition-colors">Contact</Link>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-[11px] font-semibold uppercase tracking-wider text-[#484f58] mb-4">Links</h4>
+              <div className="space-y-2.5 text-[13px] text-[#8b949e]">
+                <a href="https://github.com/OneDev-Harsh/FairnessAudit" target="_blank" rel="noopener noreferrer" className="block hover:text-white transition-colors">GitHub</a>
+                <a href="https://fairlearn.org" target="_blank" rel="noopener noreferrer" className="block hover:text-white transition-colors">Fairlearn</a>
+                <a href="https://shap.readthedocs.io" target="_blank" rel="noopener noreferrer" className="block hover:text-white transition-colors">SHAP</a>
+                <a href="https://developers.google.com/community/gdsc-solution-challenge" target="_blank" rel="noopener noreferrer" className="block hover:text-white transition-colors">GSC 2026</a>
+              </div>
+            </div>
           </div>
-          
-          <div className="flex flex-col md:flex-row items-center justify-between pt-12 border-t border-white/5 gap-8">
-             <div className="text-[10px] font-black uppercase tracking-[0.5em] text-white/10">
-                © 2026 FairnessAudit Engineering · Secure & Fair
-             </div>
-             <div className="flex items-center gap-8">
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/30">
-                   <Globe size={12} /> GLOBAL NODE 04
-                </div>
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-400">
-                   <Server size={12} /> ALL SYSTEMS OPERATIONAL
-                </div>
-             </div>
+
+          <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-[#21262d] gap-4">
+            <div className="text-[11px] text-[#484f58]">
+              © 2026 FairnessAudit · Open Source
+            </div>
+            <div className="flex items-center gap-5">
+              <div className="flex items-center gap-1.5 text-[11px] text-[#484f58]">
+                <Globe size={11} /> v2.0
+              </div>
+              <div className="flex items-center gap-1.5 text-[11px] text-[#3fb950]">
+                <Server size={11} /> All systems operational
+              </div>
+            </div>
           </div>
         </div>
       </footer>

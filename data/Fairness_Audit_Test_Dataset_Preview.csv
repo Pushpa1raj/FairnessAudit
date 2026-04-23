@@ -1,0 +1,13 @@
+applicant_id,age,gender,race,education_level,employment_type,years_experience,annual_income_k,credit_score,debt_to_income,loan_amount_k,zip_code,decision_score,approved
+APP-0001,27,Male,Asian,High School,Full-time,6,119.5,730.0,0.33,54.2,11201,1.421,1
+APP-0002,28,Female,Black,Bachelor,Full-time,9,87.3,667.0,0.43,93.2,10451,-1.414,0
+APP-0003,34,Female,White,Master,Full-time,11,71.3,788.0,0.36,14.9,10023,1.986,1
+APP-0004,40,Female,Hispanic,Bachelor,Full-time,19,101.7,679.0,0.2,47.4,11369,0.677,0
+APP-0005,45,Male,Asian,Master,Full-time,25,44.2,632.0,0.09,59.5,11205,1.681,1
+APP-0006,28,Male,White,Bachelor,Full-time,13,82.4,716.0,0.11,50.2,10022,1.397,1
+APP-0007,51,Male,Hispanic,Bachelor,Part-time,34,113.3,673.0,0.27,46.0,11368,3.147,1
+APP-0008,33,Female,Hispanic,Master,Full-time,16,119.8,724.0,0.14,24.6,10453,1.673,1
+APP-0009,36,Female,Other,Associate,Part-time,21,66.8,705.0,0.05,52.2,11001,-0.293,0
+APP-0010,29,Female,Asian,Bachelor,Contract,10,81.1,685.0,0.19,34.4,10453,0.049,0
+APP-0011,18,Male,Black,Associate,Contract,2,48.0,662.0,0.42,8.6,10021,-1.22,0
+APP-0012,45,Non-binary,White,PhD,Part-time,27,123.8,721.0,0.35,69.5,10021,3.287,1
